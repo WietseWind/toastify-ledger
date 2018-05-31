@@ -87,8 +87,7 @@
               <label class="form-check-label" for="acceptRisks_thatsme">My XRP account (wallet) is secured with a mnemomic instead of a family seed (secret)</label>
             </div>
             <p v-show="acceptRisks.thatsme" class="mt-5">
-              One of the many great features of the XRP Ledger is the option to set a <b>Regular Key</b>. If you set a <b>Regular Key</b>
-              to your account (wallet), you allow the secret of another account to sign transactions on your behalf.
+              Setting a <b>Regular Key</b> attaches a family seed (secret) to your account in addition to your 24 word seed.
             </p>
             <p v-show="acceptRisks.thatsme">
               When your account (wallet) has a <b>Regular Key</b> configured, both your existing secret and the secret for the
