@@ -3,7 +3,7 @@
     <nav class="navbar navbar-expand-md fixed-top navbar-dark bg-dark">
       <a class="navbar-brand text-white">
         <b>Toastify your Ledger Nano</b>
-        <small class="p-4">A tool by <a href="https://twitter.com/WietseWind" class="text-white" target="_blank">@WietseWind</a></small>
+        <small class="p-4">XRP(L) tool by <a href="https://twitter.com/WietseWind" class="text-white" target="_blank">@WietseWind</a></small>
       </a>
     </nav>
 
