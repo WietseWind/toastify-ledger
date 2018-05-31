@@ -245,11 +245,11 @@ export default {
       titles: {
         1: { menu: 'Intro', title: 'Introduction & warnings', subtitle: 'Why Toastify your ledger?' },
         2: { menu: 'Family seed (secret)', title: 'Your newly generated family seed (secret)', subtitle: 'Write it down, and store it some place safe!' },
-        // 3: { menu: 'Verify', title: 'xxx', subtitle: 'yyyy' },
         3: { menu: 'Enter mnemonic', title: 'Enter your mnemonic (words)', subtitle: 'Probably a phrase of 24 lower case words' },
-        4: { menu: 'Submit using Toast', title: 'xxx', subtitle: 'yyyy' },
-        5: { menu: 'Add wallet to Toast', title: 'xxx', subtitle: 'yyyy' },
-        6: { menu: 'Done', title: 'xxx', subtitle: 'yyyy' }
+        4: { menu: 'Verify', title: 'xxx', subtitle: 'yyyy' },
+        5: { menu: 'Submit using Toast', title: 'xxx', subtitle: 'yyyy' },
+        6: { menu: 'Add wallet to Toast', title: 'xxx', subtitle: 'yyyy' },
+        7: { menu: 'Done', title: 'xxx', subtitle: 'yyyy' }
       }
     }
   }
