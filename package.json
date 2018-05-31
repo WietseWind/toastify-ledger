@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@xkeshi/vue-qrcode": "^0.3.0",
+    "ripple-keypairs": "^0.10.1",
     "vue": "^2.5.2"
   },
   "devDependencies": {
