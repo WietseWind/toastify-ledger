@@ -1,8 +1,17 @@
-# toastify-ledger
+# Toastify Ledger
 
-> Add a RegularKey to a Ledger XRP wallet to use the account with a Family Seed (secret)
+Add a RegularKey to a mnemonic XRP wallet (eg. Ledger Nano) to use the account with a Family Seed (secret) in all available XRP wallets / tools / decentralized exchanges.
 
-## Build Setup
+# Download & use
+
+You can [download the most recent build from Github](https://github.com/WietseWind/toastify-ledger/releases). 
+Extract the ZIP, and run `index.html` offline on your local computer.
+
+If you want to build from source, checkout (or [download](https://github.com/WietseWind/toastify-ledger/archive/development.zip)) this repository and run `npm install` to install dependencies. Then run `npm run build` to generate the output in the `/dist/` folder.
+
+# Development
+
+This project is coded in Vue-Webpack.
 
 ``` bash
 # install dependencies
