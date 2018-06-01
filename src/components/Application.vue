@@ -84,7 +84,7 @@
             </p>
             <div class="form-check">
               <input type="checkbox" class="form-check-input" v-model="acceptRisks.thatsme" id="acceptRisks_thatsme">
-              <label class="form-check-label" for="acceptRisks_thatsme">My XRP account (wallet) is secured with a mnemomic instead of a family seed (secret)</label>
+              <label class="form-check-label" for="acceptRisks_thatsme">My XRP account (wallet) is secured with a mnemonic instead of a family seed (secret)</label>
             </div>
             <p v-show="acceptRisks.thatsme" class="mt-5">
               Setting a <b>Regular Key</b> attaches a family seed (secret) to your account in addition to your 24 word seed.
@@ -132,7 +132,7 @@
             </h2>
             <h2 class="secure text-center mt-5" v-if="account.focusConfirm || account.secret === account.confirm">
               <code class="text-muted">
-                <b>s{{ 'X'.repeat(account.secret.length - 1) }}</b>
+                <b>s{{ repeat('X', account.secret.length - 1) }}</b>
               </code>
             </h2>
             <p class="mt-5 text-center">
@@ -145,18 +145,49 @@
             <div class="row mb-5">
               <div class="d-none d-md-block col-2"></div>
               <div class="col-12 col-md-8">
-                <input type="text" :class="{ 'text-success is-valid': account.secret === account.confirm }" @blur="account.focusConfirm = false" @focus="account.focusConfirm = true" class="form-control form-control-lg" v-model="account.confirm" placeholder="Confirm the family seed (secret)">
+                <input type="text" :class="{ 'is-valid': account.secret === account.confirm }" @blur="account.focusConfirm = false" @focus="account.focusConfirm = true" class="form-control form-control-lg" v-model="account.confirm" placeholder="Confirm the family seed (secret)">
               </div>
             </div>
           </div>
           <div class="col-12" v-if="step === 3">
-            <p>Step 3 ... Not done yet.</p>
+            <p>Please enter your mnemonic. Your mnemonic is probably a sentence of 24 lowercase words. However, mnemonics with an other amount of words are in circulation as well (but less common).</p>
+            <textarea :class="{ 'is-valid': formattedMnemonic.words === mnemonic.text.trim() && formattedMnemonic.count === 24, 'is-invalid': formattedMnemonic.words !== mnemonic.text.trim() }" type="text" class="mnemonic form-control form-control-lg" v-model="mnemonic.text" placeholder="Enter your mnemonic"></textarea>
+            <div class="form-check mt-4">
+              <input type="checkbox" class="form-check-input" v-model="mnemonic.hasPassphrase" id="mnemonic_hasPassphrase">
+              <label class="form-check-label" for="mnemonic_hasPassphrase">I have a mnemonic with passphrase, also known as the '25th word'</label>
+            </div>
+            <input v-if="mnemonic.hasPassphrase" type="text" class="mt-3 form-control form-control-lg" v-model="mnemonic.passphrase" placeholder="Enter your passphrase">
           </div>
           <div class="col-12" v-if="step === 4">
-            <p>Step 4 ... Not done yet.</p>
+            <p>
+              <b>Please check</b> if the account (wallet address) <b>matches your XRP wallet address</b>.
+              Based on the mnemonic you entered, your XRP wallet address should be:
+            </p>
+            <h2 class="secure text-center mt-5" v-if="mnemonic.account.address === ''">
+              <code class="text-secondary">
+                Calculating...
+              </code>
+            </h2>
+            <h2 class="secure text-center mt-5" v-if="mnemonic.account.address !== ''">
+              <code class="text-primary">
+                <b>{{ mnemonic.account.address }}</b>
+              </code>
+            </h2>
+            <div class="text-center mt-5">
+              <div class="form-check text-center" :class="{ 'text-muted': mnemonic.account.address== '' }">
+                <input type="checkbox" :disabled="mnemonic.account.address === ''" class="form-check-input" v-model="mnemonic.accept" id="mnemonic_accept">
+                <label class="form-check-label" :class="{ 'disabled': mnemonic.account.address === '' }" for="mnemonic_accept">Yes, I checked and this is indeed my XRP wallet address</label>
+              </div>
+            </div>
           </div>
           <div class="col-12" v-if="step === 5">
-            <p>Step 5 ... Not done yet.</p>
+            <p>This is what we are going to do:</p>
+            <ul>
+              <li>a</li>
+              <li>b</li>
+              <li>c</li>
+              <li>d</li>
+            </ul>
           </div>
           <div class="col-12" v-if="step === 6">
             <p>Step 6 ... Not done yet.</p>
@@ -181,11 +212,29 @@
 <script>
 import VueQrcode from '@xkeshi/vue-qrcode'
 import keypairs from 'ripple-keypairs'
+import bip39 from 'bip39'
+import bip32 from 'ripple-bip32'
 
 export default {
   name: 'Application',
   components: {
     VueQrcode
+  },
+  watch: {
+    step (step) {
+      if (this.mnemonic.account.mnemonic !== this.mnemonic.text) {
+        // Recalculate
+        this.mnemonic.accept = false
+        this.mnemonic.account.privateKey = ''
+        this.mnemonic.account.publicKey = ''
+        this.mnemonic.account.address = ''
+        if (step === 4) {
+          this.$nextTick(() => {
+            setTimeout(this.mnemonicToAccount, 250)
+          })
+        }
+      }
+    }
   },
   mounted () {
     this.generateAccount()
@@ -199,8 +248,14 @@ export default {
       this.acceptRisks.thatsme = true
       this.acceptRisks.understand = true
       this.acceptRisks.keepSecretSafe = true
-      this.step = 3
+      this.step = 5
       this.account.confirm = this.account.secret
+      this.mnemonic.text = 'novel matter final only nice cheese address cradle civil crash great flame struggle consider crowd surface purpose saddle mango endless mixed trial tape wrap'
+      this.mnemonic.accept = true
+      this.mnemonic.account.mnemonic = this.mnemonic.text
+      this.mnemonic.account.address = 'r9JynAPy1xUEW2bAYK36fy5dKKNNNKK1Z5'
+      this.mnemonic.account.privateKey = '000762EED5BA4F378FFA60621C6DEF72F4A0A579112ADA5F5D6B2A35EC27E893A5'
+      this.mnemonic.account.publicKey = '0203A564B266EE3F01AADD3A87289DDE215AAC70EF62F9019EE5B14967A370E1A9'
     }
   },
   computed: {
@@ -213,16 +268,60 @@ export default {
           return !this.acceptRisks.understand || !this.acceptRisks.keepSecretSafe
         case 2:
           return this.account.confirm.trim() !== this.account.secret.trim()
+        case 3:
+          let mnemonicValid = this.mnemonic.text.trim() !== this.formattedMnemonic.words || this.formattedMnemonic.count < 1 || this.formattedMnemonic.words.length < 20
+          let passphraseValid = this.mnemonic.hasPassphrase && this.mnemonic.passphrase === ''
+          return mnemonicValid || passphraseValid
+        case 4:
+          return this.mnemonic.account.address === '' || !this.mnemonic.accept
         default:
           return true
+      }
+    },
+    formattedMnemonic () {
+      let words = this.mnemonic.text.trim().toLowerCase().replace(/[^a-z]/g, ' ').replace(/[ ]+/g, ' ')
+
+      return {
+        words: words,
+        count: words === '' ? 0 : words.split(' ').length
       }
     }
   },
   methods: {
+    mnemonicToAccount () {
+      let passphrase
+
+      this.mnemonic.accept = false
+      this.mnemonic.account.mnemonic = this.mnemonic.text
+
+      if (this.mnemonic.hasPassphrase && this.mnemonic.passphrase !== '') {
+        passphrase = this.mnemonic.passphrase
+      }
+
+      if (this.formattedMnemonic.words.length >= 20 && this.formattedMnemonic.words === this.mnemonic.text.trim()) {
+        let seed = bip39.mnemonicToSeed(this.formattedMnemonic.words, passphrase)
+        let m = bip32.fromSeedBuffer(seed)
+        let keyPair = m.derivePath("m/44'/144'/0'/0/0").keyPair.getKeyPairs()
+
+        this.mnemonic.account.privateKey = keyPair.privateKey
+        this.mnemonic.account.publicKey = keyPair.publicKey
+        this.mnemonic.account.address = keypairs.deriveAddress(keyPair.publicKey)
+
+        return true
+      }
+      return false
+    },
     generateAccount () {
       this.account.secret = keypairs.generateSeed({})
       this.account.keypair = keypairs.deriveKeypair(this.account.secret)
       this.account.address = keypairs.deriveAddress(this.account.keypair.publicKey)
+    },
+    repeat (char, length) {
+      let str = ''
+      for (let i = 0; i < length; i++) {
+        str += char
+      }
+      return str
     }
   },
   data () {
@@ -241,13 +340,25 @@ export default {
         confirm: '',
         focusConfirm: false
       },
+      mnemonic: {
+        text: '',
+        hasPassphrase: false,
+        passphrase: '',
+        accept: false,
+        account: {
+          privateKey: '',
+          publicKey: '',
+          address: '',
+          mnemonic: ''
+        }
+      },
       step: 1,
       titles: {
         1: { menu: 'Intro', title: 'Introduction & warnings', subtitle: 'Why Toastify your ledger?' },
         2: { menu: 'Family seed (secret)', title: 'Your newly generated family seed (secret)', subtitle: 'Write it down, and store it some place safe!' },
-        3: { menu: 'Enter mnemonic', title: 'Enter your mnemonic (words)', subtitle: 'Probably a phrase of 24 lower case words' },
-        4: { menu: 'Verify', title: 'xxx', subtitle: 'yyyy' },
-        5: { menu: 'Submit using Toast', title: 'xxx', subtitle: 'yyyy' },
+        3: { menu: 'Enter mnemonic', title: 'Enter your mnemonic (words)', subtitle: 'Probably a phrase of 24 lower case words.' },
+        4: { menu: 'Verify', title: 'Verify your account address', subtitle: 'Your account is derived from your mnemonic. Please check it.' },
+        5: { menu: 'Submit using Toast', title: 'Use Toast Wallet to add your Regular Key', subtitle: 'Please open Toast Wallet, and follow the instructions below.' },
         6: { menu: 'Add wallet to Toast', title: 'xxx', subtitle: 'yyyy' },
         7: { menu: 'Done', title: 'xxx', subtitle: 'yyyy' }
       }
@@ -272,6 +383,21 @@ export default {
     &:hover {
       text-decoration: underline;
     }
+    &.disabled {
+      cursor: default;
+      &:hover {
+        text-decoration: none;
+      }
+    }
+  }
+  textarea.mnemonic {
+    height: calc(12em - 11vw);
+    min-height: 5em;
+    resize: none;
+  }
+  .text-center>.form-check {
+    display: inline-block;
+    margin: 0 auto 0 auto;
   }
   .secure {
     pointer-events: none;

@@ -12,6 +12,8 @@
   },
   "dependencies": {
     "@xkeshi/vue-qrcode": "^0.3.0",
+    "bip39": "^2.5.0",
+    "ripple-bip32": "0.0.3",
     "ripple-keypairs": "^0.10.1",
     "vue": "^2.5.2"
   },
