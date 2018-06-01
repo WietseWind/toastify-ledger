@@ -67,9 +67,6 @@
             Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.
           </p>
         </div> -->
-        <!-- <div class="text-center">
-          <VueQrcode value="Hello, World!" :options="{ size: 200, foreground: '#000000' }"></VueQrcode>
-        </div> -->
         <div class="row">
           <div class="col-12" v-if="step === 1">
             <p>
@@ -181,22 +178,151 @@
             </div>
           </div>
           <div class="col-12" v-if="step === 5">
-            <p>This is what we are going to do:</p>
+            <p>This is what we are going to do, <b>please read this list carefully</b>:</p>
             <ul>
-              <li>a</li>
-              <li>b</li>
-              <li>c</li>
-              <li>d</li>
+              <li>Open Toast Wallet, and go to <b>Settings</b> and click <b>Submit Offline Transaction</b></li>
+              <li>Scan the <b class="text-danger">red</b> QR code displayed below</li>
+              <li>Follow the (step by step) instructions below</li>
             </ul>
+            <div class="row">
+              <div class="col-12 col-lg-4 text-center mt-2">
+                <div class="card" :class="{ 'text-muted bg-light': toast.scanned }">
+                  <div class="card-body">
+                    <h5 class="card-title">1. Scan in Toast</h5>
+                    <div class="card-text">
+                      <VueQrcode :value="mnemonic.account.address" :options="{ size: 200, background: 'transparent', foreground: toast.scanned ? '#a0a0a0' : '#dc3545' }"></VueQrcode>
+                    </div>
+                  </div>
+                  <div class="card-footer bg-transparent" :class="{ 'border-white': !toast.scanned, 'border-light': toast.scanned }">
+                    <button v-if="toast.scanned" disabled class="btn btn-outline-secondary">✓ Done</button>
+                    <button v-if="!toast.scanned" @click="toast.scanned = true" class="btn btn-primary">Continue →</button>
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-lg-4 text-center mt-2">
+                <div class="card" :class="{ 'text-muted bg-light': !toast.scanned || toast.codeComplete }">
+                  <div class="card-body">
+                    <h5 class="card-title">2. Type code</h5>
+                    <div class="card-text">
+                      Enter the <b class="text-primary" :class="{ 'text-muted': !toast.scanned || toast.codeComplete }">blue</b> <code class="text-primary" :class="{ 'text-muted': !toast.scanned || toast.codeComplete }"><q>Confirmation Code</q></code> from Toast Wallet.
+                      <input :disabled="!toast.scanned" v-on:keyup="toast.codeOk.checked = false" type="text" :class="{ 'text-primary': !toast.codeComplete, 'text-secondary': toast.codeComplete, 'is-invalid text-danger': (!toast.codeOk.is && toast.codeOk.checked) }" class="toast-confirmation-code mt-5 form-control text-center form-control-lg" placeholder="XXXX XXXX XXXX" v-model="toast.code">
+                      <small class="text-danger text-center" v-if="!toast.codeOk.is && toast.codeOk.checked">Invalid code, please double check</small>
+                    </div>
+                  </div>
+                  <div class="card-footer bg-transparent" :class="{ 'border-light': toast.codeComplete, 'border-white': !toast.codeComplete }" v-if="toast.scanned">
+                    <button v-if="!toast.codeComplete" @click="checkToastCode" :disabled="toast.code.length <= 3 || (toast.codeOk.checked && !toast.codeOk.ok)" class="btn btn-primary">Continue →</button>
+                    <button v-if="toast.codeComplete" @click="checkToastCode" class="btn btn-outline-primary">✓ Done</button>
+                  </div>
+                  <div class="card-footer bg-transparent border-light" v-if="!toast.scanned">
+                    <small class="text-muted">Complete the previous steps...</small>
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-lg-4 text-center mt-2">
+                <div class="card" :class="{ 'text-muted bg-light': !toast.scanned || !toast.codeComplete }">
+                  <div class="card-body">
+                    <h5 class="card-title">3. Scan in Toast</h5>
+                    <div class="card-text">
+                      <VueQrcode v-if="toast.scanned && toast.codeComplete" :value="regularKeyTx.string" :options="{ size: 240, background: 'transparent', foreground: '#28a745' }"></VueQrcode>
+                      <!-- <pre class="text-left">{{ regularKeyTx.signedTx }}</pre> -->
+                      <svg v-if="!toast.scanned || !toast.codeComplete" width="100" height="100" class="mt-5" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Capa_1" x="0px" y="0px" viewBox="0 0 30.066 30.066" style="enable-background:new 0 0 30.066 30.066;" xml:space="preserve">
+                        <path d="M14.335,14.465c0,0-3.516-3.422-4.887-7.355V6.039h11.168V7.11c-1.782,4.343-4.887,7.355-4.887,7.355H14.335z" style="fill: #cccccc;"></path>
+                        <path d="M24.642,4.907V3.219h1.602V0H3.823v3.219h1.6v1.688c0,2.579,4.628,9.622,4.848,10.13   c-0.216,0.508-4.848,7.551-4.848,10.119v1.687h-1.6v3.223h22.42v-3.223h-1.602v-1.687c0-2.581-4.631-9.577-4.875-10.125   C20.01,14.485,24.642,7.486,24.642,4.907z M23.039,25.156v1.687H7.024v-1.687c0-1.853,4.907-9.195,4.907-10.125   c0-0.929-4.907-8.269-4.907-10.124V3.219H23.04v1.688c0,1.855-4.948,9.195-4.948,10.124C18.093,15.961,23.039,23.303,23.039,25.156   z" style="fill: #cccccc;"></path>
+                      </svg>
+                    </div>
+                  </div>
+                  <div v-if="toast.scanned && toast.codeComplete" class="card-footer bg-transparent border-white">
+                    <button @click="regularKeySet" class="btn btn-primary">Continue →</button>
+                  </div>
+                  <div v-if="!toast.scanned || !toast.codeComplete" class="card-footer bg-transparent border-light">
+                    <small class="text-muted">Complete the previous steps...</small>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
           <div class="col-12" v-if="step === 6">
-            <p>Step 6 ... Not done yet.</p>
+            <p>
+              You are done! You successfully added a <b>Regular Key</b> to your XRP account (wallet), allowing to use your mnemonic wallet
+              with every XRP wallet / tool that requires a family seed (secret). Let's start by adding your mnemonic wallet to <b>Toast Walllet</b>.
+            </p>
+            <ul>
+              <li>Open <b>Toast Wallet</b> and click <b>Add Account</b> (from the <b>Home</b>-panel)</li>
+              <li>Click <b>Add Existing Address</b></li>
+            </ul>
+            <p>Now enter your new <b>family seed (secret)</b> (generated at step 2) in the <b>Ripple Secret</b> field in Toast Wallet:</p>
+            <div class="row">
+              <div class="col-0 col-md-2 col-lg-3"></div>
+              <div class="col-12 col-md-8 col-lg-6">
+                <div class="card border-primary">
+                  <div class="card-body">
+                    <div class="card-text text-center">
+                      <h6><code class="text-muted">{{ account.secret }}</code></h6>
+                      <p class="alert alert-warning text-center p-1">
+                        <small>This is the family seed (secret) for your Regular Key. Keep this key safe!</small>
+                      </p>
+                      <VueQrcode :value="account.secret" :options="{ size: 200, foreground: '#2079F9', background: 'transparent' }"></VueQrcode>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <p class="mt-5">
+              Now enter the account address (wallet) in the <b>Ripple Address</b> field in Toast Wallet.
+              This is the wallet address of your mnemonic account (wallet). You can receive XRP on this address.
+            </p>
+            <div class="row">
+              <div class="col-0 col-md-2 col-lg-3"></div>
+              <div class="col-12 col-md-8 col-lg-6">
+                <div class="card border-primary">
+                  <div class="card-body">
+                    <div class="card-text text-center">
+                      <h6><code class="text-muted">{{ mnemonic.account.address }}</code></h6>
+                      <VueQrcode :value="mnemonic.account.address" :options="{ size: 200, foreground: '#2079F9', background: 'transparent' }"></VueQrcode>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <ul class="mt-5">
+              <li>You can enter a title for your wallet in the <b>Account Nickname</b> field</li>
+              <li>
+                Enter a passphrase in the <b>Enter your Passphrase</b> field. You will need this passphrase
+                when you want to send a transaction.
+              </li>
+            </ul>
           </div>
           <div class="col-12" v-if="step === 7">
-            <p>Step 7 ... Not done yet.</p>
+            <p>
+              Nice job! You did it: you can now use both your mnemonic passphrase and your freshly generated
+              <b>family seed (secret)</b> to sign XRP transactions. You can now use all available XRP tools 😀
+            </p>
+            <p>
+              If you enjoyed Toast Wallet and this tool, you can buy us a beer 🍺
+            </p>
+            <div class="row mt-5 mb-5">
+              <div class="col-6 text-center">
+                <h5>Toast Wallet</h5>
+                <small>By <b>StarStone Limited</b></small>
+                <div class="text-center">
+                  <code class="text-secondary"><small>rToastMYRQh8boeo5Ys1CnPySmt3c9x3Y</small></code>
+                  <br />
+                  <VueQrcode class="mt-3" value="https://ripple.com//send?to=rToastMYRQh8boeo5Ys1CnPySmt3c9x3Y&dt=100999"></VueQrcode>
+                </div>
+              </div>
+              <div class="col-6 text-center">
+                <h5>Toastify Tool</h5>
+                <small>By <b>@WietseWind</b></small>
+                <div class="text-center">
+                  <code class="text-secondary"><small>rPdvC6ccq8hCdPKSPJkPmyZ4Mi1oG2FFkT</small></code>
+                  <br />
+                  <VueQrcode class="mt-3" value="https://ripple.com//send?to=rPdvC6ccq8hCdPKSPJkPmyZ4Mi1oG2FFkT&dt=100999"></VueQrcode>
+                </div>
+              </div>
+            </div>
           </div>
           <div class="col-12">
-            <button :disabled="disableNext" :class="{ 'btn-primary': !disableNext, 'btn-secondary': disableNext }" v-if="Object.keys(titles).indexOf((step + 1) + '') > -1" @click="step++" class="float-right btn d-block btn-lg text-right mt-3">
+            <button :disabled="disableNext" :class="{ 'btn-primary': !disableNext, 'btn-secondary': disableNext }" v-if="Object.keys(titles).indexOf((step + 1) + '') > -1 && titles[step].buttons" @click="step++" class="float-right btn d-block btn-lg text-right mt-3">
               <b>Next →</b>
             </button>
             <button v-if="Object.keys(titles).indexOf((step - 1) + '') > -1" @click="step--" class="btn-lg btn-prev btn-outline-secondary btn d-block mt-3">
@@ -212,8 +338,10 @@
 <script>
 import VueQrcode from '@xkeshi/vue-qrcode'
 import keypairs from 'ripple-keypairs'
+import sign from 'ripple-sign-keypairs'
 import bip39 from 'bip39'
 import bip32 from 'ripple-bip32'
+import BN from 'bn.js'
 
 export default {
   name: 'Application',
@@ -221,8 +349,11 @@ export default {
     VueQrcode
   },
   watch: {
+    'toast.code' () {
+      this.decodeToastOfflineCode()
+    },
     step (step) {
-      if (this.mnemonic.account.mnemonic !== this.mnemonic.text) {
+      if (this.mnemonic.account.mnemonic !== this.mnemonic.text + ' / ' + (this.mnemonic.hasPassphrase ? this.mnemonic.passphrase : '')) {
         // Recalculate
         this.mnemonic.accept = false
         this.mnemonic.account.privateKey = ''
@@ -245,17 +376,23 @@ export default {
     this.local = !document.location.protocol.match(/^http/)
 
     if (this.devMode) {
-      this.acceptRisks.thatsme = true
-      this.acceptRisks.understand = true
-      this.acceptRisks.keepSecretSafe = true
-      this.step = 5
-      this.account.confirm = this.account.secret
-      this.mnemonic.text = 'novel matter final only nice cheese address cradle civil crash great flame struggle consider crowd surface purpose saddle mango endless mixed trial tape wrap'
-      this.mnemonic.accept = true
-      this.mnemonic.account.mnemonic = this.mnemonic.text
-      this.mnemonic.account.address = 'r9JynAPy1xUEW2bAYK36fy5dKKNNNKK1Z5'
-      this.mnemonic.account.privateKey = '000762EED5BA4F378FFA60621C6DEF72F4A0A579112ADA5F5D6B2A35EC27E893A5'
-      this.mnemonic.account.publicKey = '0203A564B266EE3F01AADD3A87289DDE215AAC70EF62F9019EE5B14967A370E1A9'
+      // this.acceptRisks.thatsme = true
+      // this.acceptRisks.understand = true
+      // this.acceptRisks.keepSecretSafe = true
+      // this.step = 7
+      // this.account.confirm = this.account.secret
+
+      // this.mnemonic.text = 'novel matter final only nice cheese address cradle civil crash great flame struggle consider crowd surface purpose saddle mango endless mixed trial tape wrap'
+      // this.mnemonic.accept = true
+      // this.mnemonic.account.mnemonic = this.mnemonic.text + ' / '
+      // this.mnemonic.account.address = 'r9JynAPy1xUEW2bAYK36fy5dKKNNNKK1Z5'
+      // this.mnemonic.account.privateKey = '000762EED5BA4F378FFA60621C6DEF72F4A0A579112ADA5F5D6B2A35EC27E893A5'
+      // this.mnemonic.account.publicKey = '0203A564B266EE3F01AADD3A87289DDE215AAC70EF62F9019EE5B14967A370E1A9'
+
+      // this.toast.scanned = true
+      // this.toast.code = '3132 5B2B 7413 C'
+      // this.decodeToastOfflineCode()
+      // this.checkToastCode()
     }
   },
   computed: {
@@ -274,6 +411,8 @@ export default {
           return mnemonicValid || passphraseValid
         case 4:
           return this.mnemonic.account.address === '' || !this.mnemonic.accept
+        case 6:
+          return false
         default:
           return true
       }
@@ -285,14 +424,114 @@ export default {
         words: words,
         count: words === '' ? 0 : words.split(' ').length
       }
+    },
+    regularKeyTx () {
+      let tx = {
+        Flags: 0,
+        TransactionType: 'SetRegularKey',
+        Account: this.mnemonic.account.address,
+        Fee: (this.toast.codeOk.data.fee * 1000000) + '',
+        RegularKey: this.account.address,
+        Sequence: this.toast.codeOk.data.accID,
+        LastLedgerSequence: this.toast.codeOk.data.ledID,
+        Memos: [
+          {
+            Memo: {
+              MemoType: Buffer.from('tool', 'utf8').toString('hex').toUpperCase(),
+              MemoData: Buffer.from('https://github.com/WietseWind/toastify-ledger', 'utf8').toString('hex').toUpperCase()
+            }
+          }
+        ]
+      }
+
+      let signedTx = sign(JSON.stringify(tx), this.mnemonic.account)
+
+      return {
+        signedTx: signedTx,
+        string: 'ripple:signed-transaction:' + signedTx.signedTransaction
+      }
     }
   },
   methods: {
+    regularKeySet () {
+      this.$swal({
+        icon: 'success',
+        text: 'Did Toast tell you your transaction was successful?',
+        dangerMode: false,
+        buttons: {
+          cancel: 'No',
+          yes: {
+            text: 'Yes',
+            value: 'yes'
+          }
+        }
+      }).then(value => {
+        if (value === 'yes') {
+          this.step = 6
+          this.toast.scanned = false
+          this.toast.code = ''
+        } else {
+          this.$swal({
+            icon: 'warning',
+            title: `Please check the message from Toast and act accordingly.`,
+            text: `If you don't know how to continue, please contact @WietseWind at Twitter, and please remember to NEVER share your family seed (secret) or mnemonic publicly!`,
+            dangerMode: false,
+            buttons: {
+              cancel: 'Close'
+            }
+          }).then(value => {})
+        }
+      })
+    },
+    hexToBytes (a) {
+      return new BN(a, 16).toArray(null, a.length / 2)
+    },
+    decodeToastOfflineCode () {
+      let state = false
+      let offlinecode = this.toast.code.trim().toUpperCase().replace(/[^A-Z0-9]/g, '')
+      let accID
+      let ledID
+      let fee
+      if (/^[A-F0-9]+$/m.test(offlinecode)) {
+        try {
+          let compression = this.hexToBytes(offlinecode.slice(2, 4))
+          offlinecode = offlinecode.slice(4)
+          let removedZerosLedId = compression & 7
+          let removedZerosAccId = compression >> 3
+          accID = '0'.repeat(removedZerosAccId) + offlinecode.slice(0, 8 - removedZerosAccId)
+          offlinecode = offlinecode.slice(8 - removedZerosAccId)
+          ledID = '0'.repeat(removedZerosLedId) + offlinecode.slice(0, 8 - removedZerosLedId)
+          offlinecode = offlinecode.slice(8 - removedZerosLedId)
+          while (offlinecode.length < 8) offlinecode = '0' + offlinecode
+          fee = offlinecode
+          offlinecode = accID + ledID + fee
+          state = true
+        } catch (e) {
+          console.log(e.message)
+        }
+      }
+      accID = parseInt('0x' + accID)
+      ledID = parseInt('0x' + ledID)
+      fee = parseInt('0x' + fee) / 1000000
+      this.toast.codeOk.data.accID = accID
+      this.toast.codeOk.data.ledID = ledID !== null ? ledID + 1029 + 36225052 : null
+      this.toast.codeOk.data.fee = isNaN(fee) ? null : fee
+      return state
+    },
+    checkToastCode () {
+      this.toast.codeComplete = false
+      this.toast.codeOk.is = false
+      this.toast.codeOk.checked = true
+      if (this.toast.codeOk.data.fee !== null && this.toast.codeOk.data.fee < 1 && this.toast.codeOk.data.fee > 0 && this.toast.codeOk.data.ledID !== null && this.toast.codeOk.data.ledID > 39000000) {
+        this.toast.codeOk.is = true
+        this.toast.codeComplete = true
+      }
+    },
     mnemonicToAccount () {
       let passphrase
 
       this.mnemonic.accept = false
-      this.mnemonic.account.mnemonic = this.mnemonic.text
+      this.mnemonic.account.mnemonic = this.mnemonic.text + ' / ' + (this.mnemonic.hasPassphrase ? this.mnemonic.passphrase : '')
 
       if (this.mnemonic.hasPassphrase && this.mnemonic.passphrase !== '') {
         passphrase = this.mnemonic.passphrase
@@ -352,15 +591,31 @@ export default {
           mnemonic: ''
         }
       },
+      toast: {
+        scanned: false,
+        code: '',
+        codeComplete: false,
+        codeOk: {
+          is: false,
+          checked: false,
+          data: {
+            accID: null,
+            ledID: null,
+            fee: null
+          }
+        },
+        signed: false,
+        tx: {}
+      },
       step: 1,
       titles: {
-        1: { menu: 'Intro', title: 'Introduction & warnings', subtitle: 'Why Toastify your ledger?' },
-        2: { menu: 'Family seed (secret)', title: 'Your newly generated family seed (secret)', subtitle: 'Write it down, and store it some place safe!' },
-        3: { menu: 'Enter mnemonic', title: 'Enter your mnemonic (words)', subtitle: 'Probably a phrase of 24 lower case words.' },
-        4: { menu: 'Verify', title: 'Verify your account address', subtitle: 'Your account is derived from your mnemonic. Please check it.' },
-        5: { menu: 'Submit using Toast', title: 'Use Toast Wallet to add your Regular Key', subtitle: 'Please open Toast Wallet, and follow the instructions below.' },
-        6: { menu: 'Add wallet to Toast', title: 'xxx', subtitle: 'yyyy' },
-        7: { menu: 'Done', title: 'xxx', subtitle: 'yyyy' }
+        1: { buttons: true, menu: 'Intro', title: 'Introduction & warnings', subtitle: 'Why Toastify your ledger?' },
+        2: { buttons: true, menu: 'Family seed (secret)', title: 'Your newly generated family seed (secret)', subtitle: 'Write it down, and store it some place safe!' },
+        3: { buttons: true, menu: 'Enter mnemonic', title: 'Enter your mnemonic (words)', subtitle: 'Probably a phrase of 24 lower case words.' },
+        4: { buttons: true, menu: 'Verify', title: 'Verify your account address', subtitle: 'Your account is derived from your mnemonic. Please check it.' },
+        5: { buttons: false, menu: 'Submit using Toast', title: 'Use Toast Wallet to add your Regular Key', subtitle: 'Please open Toast Wallet, and follow the instructions below.' },
+        6: { buttons: true, menu: 'Add wallet to Toast', title: 'Woohoo! 🎉', subtitle: 'You just added superpowers to your XRP account (wallet) 😉' },
+        7: { buttons: true, menu: 'Done', title: 'You did it!', subtitle: 'Do you feel generous?' }
       }
     }
   }
@@ -395,10 +650,13 @@ export default {
     min-height: 5em;
     resize: none;
   }
-  .text-center>.form-check {
+  .text-center>.form-check,
+  .text-center>.card {
     display: inline-block;
     margin: 0 auto 0 auto;
   }
+  .card { height: 100%; }
+  .toast-confirmation-code { text-transform: uppercase }
   .secure {
     pointer-events: none;
     -webkit-touch-callout: none; /* iOS Safari */

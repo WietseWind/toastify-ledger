@@ -13,8 +13,11 @@
   "dependencies": {
     "@xkeshi/vue-qrcode": "^0.3.0",
     "bip39": "^2.5.0",
+    "bn.js": "^4.11.8",
     "ripple-bip32": "0.0.3",
     "ripple-keypairs": "^0.10.1",
+    "ripple-sign-keypairs": "^1.0.2",
+    "sweetalert": "^2.1.0",
     "vue": "^2.5.2"
   },
   "devDependencies": {

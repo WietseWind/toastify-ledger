@@ -2,7 +2,9 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
 import App from './App'
+import SweetAlert from 'sweetalert'
 
+Vue.prototype.$swal = SweetAlert
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */
