@@ -18,6 +18,10 @@ I tested the software on:
  - Windows 10 + IE11
  - Windows 8.1 + Edge
  - OSX 10.13.4 + Google Chrome
+ 
+# Source
+
+The most important source (and all the instructions) are in one file (for now, will split it into components when I reuse the code for the next tool): https://github.com/WietseWind/toastify-ledger/blob/development/src/components/Application.vue
 
 # Development
 
