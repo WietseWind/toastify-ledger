@@ -185,8 +185,8 @@
               <li>Follow the (step by step) instructions below</li>
             </ul>
             <div class="row">
-              <div class="col-12 col-lg-4 text-center mt-2">
-                <div class="card" :class="{ 'text-muted bg-light': toast.scanned }">
+              <div class="col-12 col-lg-4 mt-2">
+                <div class="card text-center" :class="{ 'text-muted bg-light': toast.scanned }">
                   <div class="card-body">
                     <h5 class="card-title">1. Scan in Toast</h5>
                     <div class="card-text">
@@ -199,8 +199,8 @@
                   </div>
                 </div>
               </div>
-              <div class="col-12 col-lg-4 text-center mt-2">
-                <div class="card" :class="{ 'text-muted bg-light': !toast.scanned || toast.codeComplete }">
+              <div class="col-12 col-lg-4 mt-2">
+                <div class="card text-center" :class="{ 'text-muted bg-light': !toast.scanned || toast.codeComplete }">
                   <div class="card-body">
                     <h5 class="card-title">2. Type code</h5>
                     <div class="card-text">
@@ -218,8 +218,8 @@
                   </div>
                 </div>
               </div>
-              <div class="col-12 col-lg-4 text-center mt-2">
-                <div class="card" :class="{ 'text-muted bg-light': !toast.scanned || !toast.codeComplete }">
+              <div class="col-12 col-lg-4 mt-2">
+                <div class="card text-center" :class="{ 'text-muted bg-light': !toast.scanned || !toast.codeComplete }">
                   <div class="card-body">
                     <h5 class="card-title">3. Scan in Toast</h5>
                     <div class="card-text">
