@@ -9,6 +9,8 @@ Extract the ZIP, and run `index.html` offline on your local computer.
 
 If you want to build from source, checkout (or [download](https://github.com/WietseWind/toastify-ledger/archive/development.zip)) this repository and run `npm install` to install dependencies. Then run `npm run build` to generate the output in the `/dist/` folder.
 
+A short demo video is available at: https://youtu.be/RhZMKvz3sbU
+
 ### Tested
 
 I tested the software on:
