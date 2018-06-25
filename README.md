@@ -21,6 +21,8 @@ If you want to build from source, checkout (or [download](https://github.com/Wie
 
 A short demo video is available at: https://youtu.be/RhZMKvz3sbU
 
+### **Note:** the demo shows the tool running at Windows, however: it will work at Linux and Mac OSX as well 🎉 
+
 **Please run this tool on your own local computer and offline.**
 
 ### Tested
