@@ -147,7 +147,9 @@
             </div>
           </div>
           <div class="col-12" v-if="step === 3">
-            <p>Please enter your mnemonic. Your mnemonic is probably a sentence of 24 lowercase words. However, mnemonics with an other amount of words are in circulation as well (but less common).</p>
+            <p>
+              Please enter your mnemonic <b>separated by a space</b>. Your mnemonic is probably a sentence of 24 lowercase words. However, mnemonics with an other amount of words are in circulation as well (but less common).
+            </p>
             <textarea :class="{ 'is-valid': formattedMnemonic.words === mnemonic.text.trim() && formattedMnemonic.count === 24, 'is-invalid': formattedMnemonic.words !== mnemonic.text.trim() }" type="text" class="mnemonic form-control form-control-lg" v-model="mnemonic.text" placeholder="Enter your mnemonic"></textarea>
             <div class="form-check mt-4">
               <input type="checkbox" class="form-check-input" v-model="mnemonic.hasPassphrase" id="mnemonic_hasPassphrase">
